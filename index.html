@@ -33,6 +33,10 @@
   --scene-ripple: rgba(190, 235, 220, 0.2);
   --scene-glow-rgb: 110, 220, 190;
   --scene-h: clamp(250px, 40vw, 400px);
+  --w-g1: #2f8f5e;
+  --w-r2: #8cc9a6;
+  --w-k1: #d9962f;
+  --w-s3: #7f95a0;
   --aurora-a: rgba(80, 224, 170, 0.34);
   --aurora-b: rgba(120, 160, 255, 0.24);
 
@@ -43,12 +47,12 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0e1815; --surface: #15241f; --line: #2a3d36; --fg: #e8efe9; --muted: #9db0a6;
-    --accent-text: #f2a93b; --pos: #5fd08a; --neg: #ff8a7a; color-scheme: dark;
+    --accent-text: #f2a93b; --pos: #5fd08a; --neg: #ff8a7a; color-scheme: dark; --w-g1: #46b877; --w-r2: #9fd8bc; --w-k1: #e8aa4a; --w-s3: #7d95a3;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0e1815; --surface: #15241f; --line: #2a3d36; --fg: #e8efe9; --muted: #9db0a6;
-  --accent-text: #f2a93b; --pos: #5fd08a; --neg: #ff8a7a; color-scheme: dark;
+  --accent-text: #f2a93b; --pos: #5fd08a; --neg: #ff8a7a; color-scheme: dark; --w-g1: #46b877; --w-r2: #9fd8bc; --w-k1: #e8aa4a; --w-s3: #7d95a3;
 }
 
 * { box-sizing: border-box; }
@@ -140,9 +144,50 @@ input:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 3px
 footer { margin-top: 72px; padding-block: 36px 56px; border-top: 1px solid var(--line); color: var(--muted); font-size: 15px; }
 footer a { color: var(--accent-text); text-underline-offset: 3px; }
 
+/* Skogen på tio år */
+.grow { margin-top: 36px; border-radius: 12px; overflow: hidden; color: var(--night-fg);
+  background: radial-gradient(ellipse 60% 40% at 28% 8%, var(--aurora-a), transparent 70%), radial-gradient(ellipse 50% 35% at 78% 0%, var(--aurora-b), transparent 70%), var(--night); }
+.grow-stats { display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr)); gap: 16px 32px; padding: 24px 24px 0; align-items: end; }
+.gy { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: clamp(40px, 8vw, 72px); font-weight: 500; color: var(--accent); line-height: 1; }
+.gs { min-width: 0; }
+.gs .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--night-muted); }
+.gs .v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: clamp(20px, 3.2vw, 28px); font-weight: 500; margin-top: 4px; }
+#grow-scene { display: block; width: 100%; height: clamp(220px, 34vw, 340px); margin-top: 12px; }
+.grow-ctl { display: flex; align-items: center; gap: 14px; padding: 4px 24px 16px; }
+.grow-ctl input { flex: 1; min-width: 0; accent-color: var(--accent); }
+.yl { font-family: var(--font-mono); font-size: 12px; color: var(--night-muted); }
+.btn-play { background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 8px; padding: 10px 16px; min-width: 112px; font: 600 15px var(--font-body); cursor: pointer; }
+.btn-play:focus-visible { outline: 2px solid var(--night-fg); outline-offset: 3px; }
+.grow-note { margin: 0; padding: 0 24px 22px; color: var(--night-muted); font-size: 14px; line-height: 1.5; max-width: 70ch; }
+
+/* Skogens fördelning */
+.waffle-wrap { margin-top: 36px; display: grid; grid-template-columns: minmax(0, 520px) minmax(0, 1fr); gap: 32px 48px; align-items: start; }
+.waffle { display: grid; grid-template-columns: repeat(22, 1fr); gap: 3px; }
+.cell { aspect-ratio: 1; border-radius: 2px; transition: opacity 0.25s; }
+.cell[data-c="g1"] { background: var(--w-g1); }
+.cell[data-c="r2"] { background: var(--w-r2); }
+.cell[data-c="k1"] { background: var(--w-k1); }
+.cell[data-c="s3"] { background: var(--w-s3); }
+.waffle[data-focus] .cell { opacity: 0.16; }
+.waffle[data-focus="g1"] .cell[data-c="g1"], .waffle[data-focus="r2"] .cell[data-c="r2"],
+.waffle[data-focus="k1"] .cell[data-c="k1"], .waffle[data-focus="s3"] .cell[data-c="s3"] { opacity: 1; }
+.wlegend { display: grid; gap: 10px; min-width: 0; }
+.wl { display: grid; grid-template-columns: 14px 1fr; gap: 4px 12px; text-align: left; background: transparent; color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; font: inherit; cursor: pointer; }
+.wl[aria-pressed="true"] { border-color: var(--accent-text); background: var(--surface); }
+.wl:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 3px; }
+.wl .sw { width: 14px; height: 14px; border-radius: 3px; margin-top: 5px; }
+.wl b { font-weight: 600; }
+.wl .ha { font-family: var(--font-mono); font-size: 13px; color: var(--muted); margin-left: 6px; }
+.wl p { grid-column: 2; color: var(--muted); font-size: 15px; line-height: 1.45; }
+
 @media (max-width: 760px) {
   .reason { grid-template-columns: 1fr; }
   .calc { grid-template-columns: 1fr; }
+  .waffle-wrap { grid-template-columns: 1fr; }
+  .grow-stats { grid-template-columns: 1fr 1fr; padding: 20px 16px 0; }
+  .gy { grid-column: 1 / -1; }
+  .grow-ctl { padding: 4px 16px 16px; }
+  .grow-note { padding: 0 16px 18px; }
   section { padding-top: 56px; }
 }
 @media (prefers-reduced-motion: reduce) { .aurora { animation: none; } }
@@ -205,6 +250,61 @@ footer a { color: var(--accent-text); text-underline-offset: 3px; }
           <h3>Skogen växer i värde varje år</h3>
           <p>Planen räknar med att virkesförrådet går från 2 067 till 2 870 m³sk på tio år, trots gallringen. Det är 803 m³sk mer, ungefär 231 000 kr till dagens 288 kr per kubik.</p>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Skogen på tio år</h2>
+    <p class="lead">Dra i reglaget eller tryck på Spela upp. Siffrorna kommer från skogsbruksplanen: tillväxt på 97 m³sk per år, gallring av 170 m³sk 2027 och plantering på avdelning 8 2028.</p>
+    <div class="grow">
+      <div class="grow-stats">
+        <div class="gy" id="gy">2026</div>
+        <div class="gs"><div class="k">Virkesförråd</div><div class="v" id="gv">2 067 m³sk</div></div>
+        <div class="gs"><div class="k">Virkesvärde, 288 kr/m³sk</div><div class="v" id="gk">595 296 kr</div></div>
+        <div class="gs"><div class="k">Mot idag</div><div class="v" id="gd">+0 m³sk</div></div>
+      </div>
+      <canvas id="grow-scene" role="img" aria-label="Illustration av stranden vid Teurajärvi som växer över tio år"></canvas>
+      <div class="grow-ctl">
+        <button type="button" class="btn-play" id="play">Spela upp</button>
+        <span class="yl">2026</span>
+        <input type="range" id="year" min="0" max="10" step="1" value="0" aria-label="År">
+        <span class="yl">2036</span>
+      </div>
+      <p class="grow-note">Gallringen 2027 tar ut 170 m³sk, vilket syns som ett litet dopp i förrådet. Den ger cirka 14 750 kr i kassan. På avdelning 8 planteras ny skog 2028. Bilden är schematisk och inte i skala.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Var skogen finns</h2>
+    <p class="lead">37,4 hektar produktiv skog enligt planen. Varje ruta är 0,1 hektar. Planen föreslår ingen föryngringsavverkning de närmaste tio åren, så intäkterna under perioden kommer från gallringen. Tryck på en förklaring för att lyfta fram den.</p>
+    <div class="waffle-wrap">
+      <div class="waffle" id="waffle" role="img" aria-label="Fördelning av 37,4 hektar: 16,3 hektar gallringsskog, 9,4 hektar röjningsskog, 7,7 hektar kalmark och 4,0 hektar orörd äldre skog"></div>
+      <div class="wlegend">
+        <button type="button" class="wl" data-k="g1" aria-pressed="false">
+          <span class="sw" style="background: var(--w-g1)"></span>
+          <span><b>Gallringsskog</b> <span class="ha">16,3 ha · 44 %</span></span>
+          <p>Här kommer intäkterna ifrån. Första gallringen är avdelning 7, 170 m³sk.</p>
+        </button>
+        <button type="button" class="wl" data-k="r2" aria-pressed="false">
+          <span class="sw" style="background: var(--w-r2)"></span>
+          <span><b>Röjningsskog</b> <span class="ha">9,4 ha · 25 %</span></span>
+          <p>Ung skog med god tillväxt. Ger ingen intäkt än men växer till framtida gallring.</p>
+        </button>
+        <button type="button" class="wl" data-k="k1" aria-pressed="false">
+          <span class="sw" style="background: var(--w-k1)"></span>
+          <span><b>Kalmark</b> <span class="ha">7,7 ha · 21 %</span></span>
+          <p>Avverkad mark. Markberedning 2027 och plantering 2028. Kostnad nu, skog sedan.</p>
+        </button>
+        <button type="button" class="wl" data-k="s3" aria-pressed="false">
+          <span class="sw" style="background: var(--w-s3)"></span>
+          <span><b>Orörd äldre skog</b> <span class="ha">4,0 ha · 11 %</span></span>
+          <p>Naturvårdsmål, lämnas för fri utveckling. Värde i marken men ingen avverkning.</p>
+        </button>
       </div>
     </div>
   </div>
@@ -443,116 +543,243 @@ footer a { color: var(--accent-text); text-underline-offset: 3px; }
     themeChart();
   }
 
-  // Insjön: nattscen med spegelbild
+  // ---------- Insjöscener ----------
   function rng(seed) { var s = seed; return function () { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; }
-  function drawForest() {
-    var c = $('forest'), dpr = window.devicePixelRatio || 1;
-    var w = c.clientWidth, h = c.clientHeight;
-    if (!w || !h) return;
-    c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
-    var ctx = c.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
-    var H = h * 0.58, r = rng(5), objs = [];
-    var far = css('--scene-far'), mid = css('--scene-mid'), near = css('--scene-near');
-    var rock = css('--scene-rock'), moss = css('--scene-moss'), glow = css('--scene-glow-rgb');
-    var ripple = css('--scene-ripple');
+  function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+  function fmt(n) { return Math.round(n).toLocaleString('sv-SE'); }
+  var reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var scenes = [], growScene = null, growT = 0, growTarget = 0;
 
-    function spruce(x, base, ht, col, lean) {
-      var tiers = Math.max(4, Math.min(9, Math.round(ht / 13)));
-      var step = ht * 0.86 / tiers;
-      ctx.fillStyle = col;
-      ctx.fillRect(x - ht * 0.016, base - ht * 0.14, ht * 0.032, ht * 0.14);
-      for (var i = 0; i < tiers; i++) {
-        var top = base - ht + i * step, th = step * 2.0;
-        var hw = ht * 0.17 * (0.3 + 0.7 * (i + 1) / tiers);
-        var cx = x + lean * (1 - i / tiers);
-        ctx.beginPath();
-        ctx.moveTo(cx, top);
-        ctx.lineTo(x - hw, top + th); ctx.lineTo(x - hw * 0.35, top + th * 0.84); ctx.lineTo(x, top + th);
-        ctx.lineTo(x + hw * 0.35, top + th * 0.84); ctx.lineTo(x + hw, top + th);
-        ctx.closePath(); ctx.fill();
+  function spruceOn(c, x, base, ht, col, lean) {
+    var tiers = Math.max(4, Math.min(9, Math.round(ht / 13)));
+    var step = ht * 0.86 / tiers;
+    c.fillStyle = col;
+    c.fillRect(x - ht * 0.016, base - ht * 0.14, ht * 0.032, ht * 0.14);
+    for (var i = 0; i < tiers; i++) {
+      var top = base - ht + i * step, th = step * 2.0;
+      var hw = ht * 0.17 * (0.3 + 0.7 * (i + 1) / tiers);
+      var cx = x + lean * (1 - i / tiers);
+      c.beginPath();
+      c.moveTo(cx, top);
+      c.lineTo(x - hw, top + th); c.lineTo(x - hw * 0.35, top + th * 0.84); c.lineTo(x, top + th);
+      c.lineTo(x + hw * 0.35, top + th * 0.84); c.lineTo(x + hw, top + th);
+      c.closePath(); c.fill();
+    }
+  }
+  function matureF(t) { return 1 + 0.18 * (t / 10); }
+  function youngF(t) { return 0.3 * clamp((t - 2) / 8, 0, 1); }
+
+  function createScene(canvas, opts) {
+    var S = { t: 0, ok: false, visible: true };
+    var w = 0, h = 0, H = 0, dpr = 1, ctx = null;
+    var L = [document.createElement('canvas'), document.createElement('canvas'), document.createElement('canvas')];
+    var R = document.createElement('canvas');
+    var objs = [[], [], []], gaps = [], glints = [], wg, sg, rg2, cols = {};
+
+    function paintLayers() {
+      for (var i = 0; i < 3; i++) {
+        var c = L[i].getContext('2d');
+        c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
+        for (var j = 0; j < objs[i].length; j++) objs[i][j](c, S.t);
       }
     }
-    function tree(x, base, ht, col) {
-      var lean = (r() - 0.5) * ht * 0.05;
-      objs.push(function () { spruce(x, base, ht, col, lean); });
-    }
-    function mound(x, rx, ry) {
-      objs.push(function () {
-        ctx.fillStyle = rock; ctx.beginPath(); ctx.ellipse(x, H + 1, rx, ry, 0, Math.PI, 0); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = moss; ctx.beginPath(); ctx.ellipse(x - rx * 0.05, H + 1 - ry * 0.35, rx * 0.86, ry * 0.62, 0, Math.PI, 0); ctx.closePath(); ctx.fill();
+
+    function build() {
+      dpr = window.devicePixelRatio || 1;
+      w = canvas.clientWidth; h = canvas.clientHeight;
+      if (!w || !h) { S.ok = false; return; }
+      ctx = canvas.getContext('2d');
+      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+      L.concat([R]).forEach(function (c) { c.width = canvas.width; c.height = canvas.height; });
+      H = h * 0.58;
+      cols = { far: css('--scene-far'), mid: css('--scene-mid'), near: css('--scene-near'), rock: css('--scene-rock'), moss: css('--scene-moss'), glow: css('--scene-glow-rgb'), ripple: css('--scene-ripple') };
+      var r = rng(5), x;
+      objs = [[], [], []];
+      function ridgeY(px) { return H - h * 0.05 - h * 0.035 * Math.sin(px / w * 7 + 1) - h * 0.025 * Math.sin(px / w * 17 + 2); }
+      function tree(layer, kind, px, base, ht, col) {
+        var lean = (r() - 0.5) * ht * 0.05;
+        objs[layer].push(function (c, t) {
+          var f = kind === 'young' ? youngF(t) : (kind === 'mature' ? matureF(t) : 1);
+          if (f > 0.01) spruceOn(c, px, base, ht * f, col, lean);
+        });
+      }
+      function mound(layer, px, rx, ry) {
+        objs[layer].push(function (c) {
+          c.fillStyle = cols.rock; c.beginPath(); c.ellipse(px, H + 1, rx, ry, 0, Math.PI, 0); c.closePath(); c.fill();
+          c.fillStyle = cols.moss; c.beginPath(); c.ellipse(px - rx * 0.05, H + 1 - ry * 0.35, rx * 0.86, ry * 0.62, 0, Math.PI, 0); c.closePath(); c.fill();
+        });
+      }
+      // Låg åsrygg och avlägsen skog
+      objs[0].push(function (c) {
+        c.fillStyle = cols.far; c.beginPath(); c.moveTo(-60, H);
+        for (var px = -60; px <= w + 60; px += 6) c.lineTo(px, ridgeY(px));
+        c.lineTo(w + 60, H); c.closePath(); c.fill();
       });
+      for (x = -60; x < w + 60; x += h * 0.02 + r() * h * 0.03) tree(0, 'far', x, ridgeY(x) + h * 0.012, h * (0.035 + r() * 0.04), cols.mid);
+      // Lägre stränder mot mitten. Vänster är kalmarken i avdelning 8 som planteras 2028.
+      for (x = w * 0.24; x < w * 0.38; x += h * (0.045 + r() * 0.04)) tree(1, 'young', x, H + h * 0.005, h * (0.07 + r() * 0.07), cols.mid);
+      for (x = w * 0.62; x < w * 0.76; x += h * (0.045 + r() * 0.04)) tree(1, 'mature', x, H + h * 0.005, h * (0.07 + r() * 0.07), cols.mid);
+      // Två små öar
+      mound(2, w * 0.50, h * 0.05, h * 0.018); tree(2, 'mature', w * 0.495, H - h * 0.004, h * 0.09, cols.near); tree(2, 'mature', w * 0.512, H - h * 0.004, h * 0.065, cols.near);
+      mound(2, w * 0.585, h * 0.035, h * 0.014); tree(2, 'mature', w * 0.585, H - h * 0.004, h * 0.06, cols.near);
+      // Strandkanter med berg och hög skog
+      [[-0.12, 0.27, 1, [0.156, 0.03]], [0.73, 1.12, -1, [0.844, 0.97]]].forEach(function (s) {
+        var x0 = w * s[0], x1 = w * s[1];
+        mound(2, w * s[3][0], h * (0.16 + r() * 0.04), h * 0.045);
+        mound(2, w * s[3][1], h * 0.11, h * 0.035);
+        for (var px = x0; px < x1; px += h * (0.045 + r() * 0.04)) {
+          var edge = s[2] === 1 ? 1 - (px - x0) / (x1 - x0) : (px - x0) / (x1 - x0);
+          tree(2, 'mature', px, H - h * 0.006, h * (0.14 + r() * 0.14 + 0.16 * edge), r() > 0.25 ? cols.near : cols.mid);
+        }
+      });
+      // Vågband och glimt
+      var q = rng(9), n = Math.round((h - H) * 1.1), i;
+      gaps = []; glints = [];
+      for (i = 0; i < n; i++) gaps.push({ x: q() * w * 1.2, y: H + 2 + q() * (h - H - 2), len: w * (0.08 + q() * 0.45), th: 1 + q() * 2.6, v: (q() - 0.5) * 14 });
+      for (i = 0; i < 46; i++) glints.push({ x: w * (0.12 + q() * 0.7), y: H + 4 + q() * (h - H - 10), len: w * (0.03 + q() * 0.12), ph: q() * 6.28, sp: 0.6 + q() * 1.2 });
+      // Gradienter
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      sg = ctx.createLinearGradient(0, H * 0.25, 0, H);
+      sg.addColorStop(0, 'rgba(' + cols.glow + ',0)'); sg.addColorStop(1, 'rgba(' + cols.glow + ',0.22)');
+      wg = ctx.createLinearGradient(0, H, 0, h);
+      wg.addColorStop(0, css('--scene-water-top')); wg.addColorStop(1, css('--scene-water-bot'));
+      rg2 = ctx.createRadialGradient(w * 0.5, H, 0, w * 0.5, H, w * 0.4);
+      rg2.addColorStop(0, 'rgba(' + cols.glow + ',0.26)'); rg2.addColorStop(1, 'rgba(' + cols.glow + ',0)');
+      S.ok = true;
+      paintLayers();
     }
-    function ridgeY(x) { return H - h * 0.05 - h * 0.035 * Math.sin(x / w * 7 + 1) - h * 0.025 * Math.sin(x / w * 17 + 2); }
 
-    // Låg åsrygg och avlägsen skog
-    objs.push(function () {
-      ctx.fillStyle = far; ctx.beginPath(); ctx.moveTo(0, H);
-      for (var x = 0; x <= w; x += 6) ctx.lineTo(x, ridgeY(x));
-      ctx.lineTo(w, H); ctx.closePath(); ctx.fill();
-    });
-    for (var x = 0; x < w; x += h * 0.02 + r() * h * 0.03) tree(x, ridgeY(x) + h * 0.012, h * (0.035 + r() * 0.04), mid);
-
-    // Lägre strand mot mitten
-    [[0.24, 0.38], [0.62, 0.76]].forEach(function (rg) {
-      for (var x = w * rg[0]; x < w * rg[1]; x += h * (0.045 + r() * 0.04)) tree(x, H + h * 0.005, h * (0.07 + r() * 0.07), mid);
-    });
-
-    // Två små öar
-    mound(w * 0.50, h * 0.05, h * 0.018); tree(w * 0.495, H - h * 0.004, h * 0.09, near); tree(w * 0.512, H - h * 0.004, h * 0.065, near);
-    mound(w * 0.585, h * 0.035, h * 0.014); tree(w * 0.585, H - h * 0.004, h * 0.06, near);
-
-    // Strandkanter med berg och hög skog
-    [[-0.03, 0.27, 1], [0.73, 1.03, -1]].forEach(function (s) {
-      var x0 = w * s[0], x1 = w * s[1];
-      mound(s[2] === 1 ? x0 + (x1 - x0) * 0.62 : x1 - (x1 - x0) * 0.62, h * (0.16 + r() * 0.04), h * 0.045);
-      mound(s[2] === 1 ? x0 + (x1 - x0) * 0.2 : x1 - (x1 - x0) * 0.2, h * 0.11, h * 0.035);
-      for (var x = x0; x < x1; x += h * (0.045 + r() * 0.04)) {
-        var edge = s[2] === 1 ? 1 - (x - x0) / (x1 - x0) : (x - x0) / (x1 - x0);
-        tree(x, H - h * 0.006, h * (0.14 + r() * 0.14 + 0.16 * edge), r() > 0.25 ? near : mid);
+    S.rebuild = build;
+    S.setT = function (t) { S.t = t; if (S.ok) paintLayers(); };
+    S.render = function (time) {
+      if (!S.ok) { build(); if (!S.ok) return; }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      var sx = 0, i;
+      if (opts.hero && !reduceMotion) sx = clamp(window.scrollY / Math.max(1, opts.hero.offsetHeight), 0, 1);
+      var dx = [sx * 6, sx * 16, sx * 30];
+      ctx.fillStyle = sg; ctx.fillRect(0, 0, w, H);
+      for (i = 0; i < 3; i++) ctx.drawImage(L[i], dx[i], 0, w, h);
+      ctx.fillStyle = wg; ctx.fillRect(0, H, w, h - H);
+      // Spegelbild: sätts ihop uppochned och skivas med en liten sidoförskjutning per rad
+      var rc = R.getContext('2d');
+      rc.setTransform(1, 0, 0, 1, 0, 0); rc.clearRect(0, 0, R.width, R.height);
+      rc.save(); rc.translate(0, 2 * H * dpr); rc.scale(1, -1);
+      for (i = 0; i < 3; i++) rc.drawImage(L[i], dx[i] * dpr, 0);
+      rc.restore();
+      ctx.save(); ctx.globalAlpha = 0.5;
+      var step = 3;
+      for (var y = Math.floor(H); y < h; y += step) {
+        var k = (y - H) / (h - H);
+        var ox = Math.sin(time * 0.9 + y * 0.28) * (0.6 + 2.4 * k) + Math.sin(time * 0.5 + y * 0.11) * 1.2 * k;
+        ctx.drawImage(R, 0, y * dpr, R.width, step * dpr, ox, y, w, step);
       }
+      ctx.restore();
+      ctx.fillStyle = wg;
+      for (i = 0; i < gaps.length; i++) {
+        var g = gaps[i], gx = (g.x + time * g.v) % (w * 1.2);
+        if (gx < 0) gx += w * 1.2;
+        ctx.fillRect(gx - w * 0.1, g.y, g.len, g.th);
+      }
+      ctx.fillStyle = rg2; ctx.fillRect(0, H, w, h - H);
+      ctx.fillStyle = cols.ripple;
+      for (i = 0; i < glints.length; i++) {
+        var gl = glints[i];
+        ctx.globalAlpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(time * gl.sp + gl.ph));
+        ctx.fillRect(gl.x, gl.y, gl.len, 1.2);
+      }
+      ctx.globalAlpha = 1;
+    };
+    return S;
+  }
+
+  // ---------- Skogen på tio år ----------
+  function stock(t) { return 2067 + 97.3 * t - 170 * clamp(t, 0, 1); }
+  function sgn(n) { return (n >= 0 ? '+' : '−') + fmt(Math.abs(n)); }
+  function showGrow() {
+    var s = stock(growT), d = s - 2067;
+    $('gy').textContent = String(2026 + Math.round(growTarget));
+    $('gv').textContent = fmt(s) + ' m³sk';
+    $('gk').textContent = fmt(s * PER) + ' kr';
+    $('gd').textContent = sgn(d) + ' m³sk';
+  }
+  function applyGrow() { growScene.setT(growT); showGrow(); }
+  function stepGrow() {
+    if (!growScene) return;
+    var d = growTarget - growT;
+    if (d === 0) return;
+    growT = Math.abs(d) < 0.002 ? growTarget : growT + d * 0.14;
+    applyGrow();
+  }
+  var playTimer = null;
+  function setYear(y) {
+    growTarget = y;
+    $('year').value = String(y);
+    $('year').setAttribute('aria-valuetext', 'år ' + (2026 + y));
+    if (reduceMotion) { growT = y; applyGrow(); growScene.render(0); } else { showGrow(); }
+  }
+  function stopPlay() { if (playTimer) { clearInterval(playTimer); playTimer = null; } $('play').textContent = 'Spela upp'; }
+  function initGrow() {
+    $('year').addEventListener('input', function () { stopPlay(); setYear(+this.value); });
+    $('play').addEventListener('click', function () {
+      if (playTimer) { stopPlay(); return; }
+      if (growTarget >= 10) setYear(0);
+      $('play').textContent = 'Paus';
+      playTimer = setInterval(function () { if (growTarget >= 10) { stopPlay(); return; } setYear(growTarget + 1); }, 900);
     });
+    $('year').setAttribute('aria-valuetext', 'år 2026');
+    showGrow();
+  }
 
-    // Himmelsglöd vid horisonten
-    var sg = ctx.createLinearGradient(0, H * 0.25, 0, H);
-    sg.addColorStop(0, 'rgba(' + glow + ',0)'); sg.addColorStop(1, 'rgba(' + glow + ',0.22)');
-    ctx.fillStyle = sg; ctx.fillRect(0, 0, w, H);
+  // ---------- Loop ----------
+  var lastFrame = 0;
+  function tick(now) {
+    requestAnimationFrame(tick);
+    if (document.hidden || now - lastFrame < 33) return;
+    lastFrame = now;
+    stepGrow();
+    for (var i = 0; i < scenes.length; i++) if (scenes[i].visible) scenes[i].render(now / 1000);
+  }
+  function initScenes() {
+    var hero = createScene($('forest'), { hero: document.querySelector('.hero') });
+    growScene = createScene($('grow-scene'), {});
+    scenes = [hero, growScene];
+    scenes.forEach(function (s, idx) {
+      var cv = idx === 0 ? $('forest') : $('grow-scene');
+      s.rebuild(); s.render(0);
+      if (window.ResizeObserver) new ResizeObserver(function () { s.rebuild(); s.render(performance.now() / 1000); }).observe(cv);
+      if (window.IntersectionObserver) new IntersectionObserver(function (e) { s.visible = e[0].isIntersecting; }).observe(cv);
+    });
+    initGrow();
+    if (!reduceMotion) requestAnimationFrame(tick);
+  }
 
-    objs.forEach(function (f) { f(); });
-
-    // Vatten
-    var wg = ctx.createLinearGradient(0, H, 0, h);
-    wg.addColorStop(0, css('--scene-water-top')); wg.addColorStop(1, css('--scene-water-bot'));
-    ctx.fillStyle = wg; ctx.fillRect(0, H, w, h - H);
-
-    // Spegelbild
-    ctx.save();
-    ctx.beginPath(); ctx.rect(0, H, w, h - H); ctx.clip();
-    ctx.translate(0, 2 * H); ctx.scale(1, -1); ctx.globalAlpha = 0.5;
-    objs.forEach(function (f) { f(); });
-    ctx.restore();
-
-    // Vågband bryter upp spegelbilden
-    ctx.fillStyle = wg;
-    var n = Math.round((h - H) * 1.1);
-    for (var i = 0; i < n; i++) {
-      var yy = H + 2 + r() * (h - H - 2), th = 1 + r() * 2.6;
-      ctx.fillRect(r() * w * 0.9, yy, w * (0.08 + r() * 0.45), th);
-    }
-    var rg2 = ctx.createRadialGradient(w * 0.5, H, 0, w * 0.5, H, w * 0.4);
-    rg2.addColorStop(0, 'rgba(' + glow + ',0.26)'); rg2.addColorStop(1, 'rgba(' + glow + ',0)');
-    ctx.fillStyle = rg2; ctx.fillRect(0, H, w, h - H);
-    ctx.fillStyle = ripple;
-    for (var j = 0; j < 46; j++) {
-      var y2 = H + 4 + r() * (h - H - 10);
-      ctx.fillRect(w * (0.12 + r() * 0.7), y2, w * (0.03 + r() * 0.12), 1.2);
-    }
+  // ---------- Skogens fördelning ----------
+  function initWaffle() {
+    var host = $('waffle');
+    if (!host) return;
+    var spec = [['g1', 163], ['r2', 94], ['k1', 77], ['s3', 40]];
+    var frag = document.createDocumentFragment();
+    spec.forEach(function (s) {
+      for (var i = 0; i < s[1]; i++) { var d = document.createElement('div'); d.className = 'cell'; d.setAttribute('data-c', s[0]); frag.appendChild(d); }
+    });
+    host.appendChild(frag);
+    var btns = document.querySelectorAll('.wl');
+    Array.prototype.forEach.call(btns, function (b) {
+      b.addEventListener('click', function () {
+        var k = b.getAttribute('data-k');
+        var on = host.getAttribute('data-focus') === k;
+        if (on) host.removeAttribute('data-focus'); else host.setAttribute('data-focus', k);
+        Array.prototype.forEach.call(btns, function (x) { x.setAttribute('aria-pressed', String(!on && x === b)); });
+      });
+    });
   }
 
   ['pris', 'rate', 'growth', 'kost', 'sv', 'pp'].forEach(function (id) { $(id).addEventListener('input', render); });
   buildChart();
   render();
-  drawForest();
-  window.addEventListener('resize', drawForest);
+  initScenes();
+  initWaffle();
   if (window.matchMedia) {
     var mq = window.matchMedia('(prefers-color-scheme: dark)');
     if (mq.addEventListener) mq.addEventListener('change', themeChart);
